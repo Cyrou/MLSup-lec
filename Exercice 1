@@ -1,0 +1,40 @@
+#Perceptron
+import pandas as pd
+import numpy as np
+from datetime import datetime
+from sklearn.linear_model import Perceptron
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_absolute_error
+import matplotlib.pyplot as plt
+from numpy import linalg as LA
+dataX=pd.read_csv('/Users/cyrilrousset/Desktop/data_set_1_X.csv')
+dataY=pd.read_csv('/Users/cyrilrousset/Desktop/data_set_1_Y.csv')
+dataY=np.ravel(dataY)
+r=[]
+t=[]
+
+for i in range(1,10):
+   r.append(i)
+   start_time=datetime.now()
+   X_train, X_test, y_train, y_test = train_test_split(dataX,dataY, train_size=0.1*i, random_state=0)
+   clf = Perceptron(tol=1e-3, random_state=0)
+   clf.fit(X_train,y_train)
+   Yres=clf.predict(X_test)
+   print(mean_absolute_error(Yres,y_test))
+   end_time = datetime.now()
+   print('Duration: {}'.format(end_time - start_time))
+   t.append(format(end_time - start_time))
+
+plt.plot(r,t,'ro')
+plt.title('time function of train')
+plt.xlabel('trainset')
+plt.ylabel('execution_time')
+plt.show
+
+X_train2, X_test2, y_train2, y_test2 = train_test_split(dataX,dataY, train_size=0.1, random_state=0)
+clf = Perceptron(tol=1e-3, random_state=0)
+clf.fit(X_train2,y_train2)
+Yres2=clf.predict(X_test2)
+norm=LA.norm(Yres2)
+w_exercise1=Yres2/norm
+print(w_exercise1,sep=';')

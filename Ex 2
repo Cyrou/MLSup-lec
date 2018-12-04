@@ -1,0 +1,68 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Dec  4 12:38:30 2018
+
+@author: philippenaroz
+"""
+
+import pandas as pd
+import numpy as np
+import random
+import matplotlib.pyplot as plt
+
+from sklearn.model_selection import train_test_split
+
+dataX=pd.read_csv('/Users/philippenaroz/Desktop/datasets/data_set_2_X.csv')
+dataY=np.ravel(pd.read_csv('/Users/philippenaroz/Desktop/datasets/data_set_2_Y.csv'))
+
+mprime = 1000
+eta = 0.5
+T = mprime
+
+mu=0.01
+
+val = [0.00001, 0.00005, 0.0001, 0.0005, 0.001,0.005,0.01,0.05,0.1 ]
+
+error_res = []
+
+for mu in val:
+
+    error_tab = []
+    
+    
+    
+    for j in range(10): #on devait moyenner sur 100 iter mais c'est trop pour ce programme (je ne sais pas quelle est la partie la plus gourmande peut être faut il la modifier)
+        
+        w=np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
+        
+        #len(dataX) = len(dataY) = 99999
+        
+        X_train, X_test, y_train, y_test = train_test_split(dataX,dataY, train_size=0.01, random_state=0)
+        #len(X_train) = 999
+        #len(X_test) = 99000
+        
+        for t in range (T) :
+            i = random.randint(0,998) #999 car en réalité la premiere ligne du fichier est pas lue donc il y a 99999 lignes 
+            v = 2*mu*w[t]
+            if (  y_train[i]*np.dot(w[t],X_train.values[i])  < 1 ) :
+                v = v - y_train[i]*X_train.values[i]
+            temp = w[t]-eta*v
+            w = np.append(w,[temp],axis = 0)
+        w_res = w.mean(0)
+       # print('w_res=',w_res)
+        
+        error = 0
+        
+        for i in range(98999):
+          #  print('value =',y_test[i]*np.dot(w_res,X_test.values[i]))
+            if ( y_test[i]*np.dot(w_res,X_test.values[i]) < 1 ) :
+                error = error + ((1 - y_test[i]*np.dot(w_res,X_test.values[i])))/98999
+        
+        error_tab.append(error)
+    
+    error_mean = np.mean(error_tab)
+    error_res.append(error_mean)
+
+plt.plot(val, error_res)
+

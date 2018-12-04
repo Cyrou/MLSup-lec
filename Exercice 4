@@ -1,0 +1,33 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import random
+
+x=pd.read_csv('/Users/cyrilrousset/Desktop/data_set_4_X.csv')
+y=pd.read_csv('/Users/cyrilrousset/Desktop/data_set_4_Y.csv')
+
+#Plotage x2 fonction de x1
+x1red=[]
+x2red=[]
+x1blue=[]
+x2blue=[]
+
+for i in range(99999):
+    if y.iloc[i][0]==-1 :
+        x1red.append(x.iloc[i][0])
+        x2red.append(x.iloc[i][1])
+    else:
+        x1blue.append(x.iloc[i][0])
+        x2blue.append(x.iloc[i][1])
+        
+plt.plot(x1blue,x2blue,'bo')
+plt.plot(x1red,x2red,'ro')
+plt.title('x2-x1')
+plt.xlabel('x1')
+plt.ylabel('x2')
+plt.show
+
+x1red.clear
+x2red.clear
+x1blue.clear
+x2blue.clear

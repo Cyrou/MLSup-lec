@@ -1,4 +1,13 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Nov 16 16:38:41 2018
+
+@author: cyrilrousset
+"""
+
 #Perceptron
+#Import des modules
 import pandas as pd
 import numpy as np
 from datetime import datetime
@@ -6,32 +15,37 @@ from sklearn.linear_model import Perceptron
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_absolute_error
 import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt2
 from numpy import linalg as LA
+
+#Extraction des données
 dataX=pd.read_csv('/Users/cyrilrousset/Desktop/data_set_1_X.csv')
 dataY=pd.read_csv('/Users/cyrilrousset/Desktop/data_set_1_Y.csv')
 dataY=np.ravel(dataY)
 
 r=[]
 t=[]
+e2=[]
 
-for i in range(1,9):
-    start_time=datetime.now()
+#Training set 10,20,30 + Training time plot
+start_time=datetime.now()
+for i in range(1,10):
     r.append(i)
-      for j in range(100):
+    for a in range(100):
           start_time=datetime.now()
           e=[]
-          X_train, X_test, y_train, y_test = train_test_split(dataX,dataY, train_size=0.1*(i), random_state=0)
-          clf = Perceptron(tol=1e-3, random_state=0)
-        clf.fit(X_train,y_train)
-        Yres=clf.predict(X_test)
-        sumVect=(Yres-y_test)/2
-        sumVect=np.absolute(sumVect)
-        error=np.sum(sumVect)/(10000*(1-0.1*i))
-        e.append(error)
-   end_time=datetime.now()
-   print('Duration: {}'.format(end_time - start_time))
-   print('Mean error: {}'.format(np.mean(e)))
-   t.append(format(end_time - start_time))
+          X_train, X_test, y_train, y_test = train_test_split(dataX,dataY, train_size=0.001*(i), random_state=0)
+          clf = Perceptron(tol=None, random_state=0, max_iter=30,eta0=2)
+          clf.fit(X_train,y_train)
+          Yres=clf.predict(X_test)
+          sumVect=(Yres-y_test)/2
+          sumVect=np.absolute(sumVect)
+          error=np.sum(sumVect)/(10000*(1-0.1*i))
+          e.append(error)
+          end_time=datetime.now()
+    print('Duration: {}'.format(end_time - start_time))
+    print('Mean error: {}'.format(np.mean(e)))
+    t.append(format(end_time - start_time))
 
 plt.plot(r,t,'ro')
 plt.title('time function of train')
@@ -39,12 +53,52 @@ plt.xlabel('trainset')
 plt.ylabel('execution_time')
 plt.show
 
+#Training set 10,20,30 + Error plot
+for i in range(1,10):
+    r.append(i)
+    for a in range(100):
+          start_time=datetime.now()
+          e=[]
+          X_train, X_test, y_train, y_test = train_test_split(dataX,dataY, train_size=0.001*(i), random_state=0)
+          clf = Perceptron(tol=0.001, random_state=0)
+          clf.fit(X_train,y_train)
+          Yres=clf.predict(X_test)
+          sumVect=(Yres-y_test)/2
+          sumVect=np.absolute(sumVect)
+          error=np.sum(sumVect)/(10000*(1-0.001*i))
+          e.append(error)
+          end_time=datetime.now()
+    e2.append(np.mean(e))
+
+
+plt2.figure    
+plt2.plot(r,e2,'ro')
+plt2.title('error function of training set')
+plt2.xlabel('trainset')
+plt2.ylabel('error')
+plt2.show
+
+
+#Minimum value
+e=1
+i=0.001
+while e>0.01:
+    X_train, X_test, y_train, y_test = train_test_split(dataX,dataY, train_size=i, random_state=0)
+    clf = Perceptron(tol=None, random_state=0, max_iter=60,eta0=2)
+    clf.fit(X_train,y_train)
+    Yres=clf.predict(X_test)
+    sumVect=(Yres-y_test)/2
+    sumVect=np.absolute(sumVect)
+    e=np.sum(sumVect)/(10000*(1-i))
+    i=i+0.01
+print(e)
+print(i)
+    
+#PrintListResult    
 X_train2, X_test2, y_train2, y_test2 = train_test_split(dataX,dataY, train_size=0.1, random_state=0)
 clf = Perceptron(tol=1e-3, random_state=0)
 clf.fit(X_train2,y_train2)
 Yres2=clf.predict(X_test2)
-sumVect=(Yres2-y_test2)/2
-sumVect=np.absolute(sumVect)
-error=np.sum(sumVect)/(9000)
-print(error)
+norm=LA.norm(Yres2)
+w_exercise1=Yres2/norm
 print(w_exercise1,sep=';')

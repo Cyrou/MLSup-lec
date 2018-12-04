@@ -1,0 +1,99 @@
+mport pandas as pd
+import matplotlib.pyplot as plt
+
+x=pd.read_csv('/Users/cyrilrousset/Desktop/data_set_3_X.csv')
+y=pd.read_csv('/Users/cyrilrousset/Desktop/data_set_3_Y.csv')
+
+#Plotage x2 fonction de x1
+x1red=[]
+x2red=[]
+x1blue=[]
+x2blue=[]
+
+for i in range(99999):
+    if y.iloc[i][0]==-1 :
+        x1red.append(x.iloc[i][0])
+        x2red.append(x.iloc[i][1])
+    else:
+        x1blue.append(x.iloc[i][0])
+        x2blue.append(x.iloc[i][1])
+        
+plt.plot(x1blue,x2blue,'bo')
+plt.plot(x1red,x2red,'ro')
+plt.title('x2-x1')
+plt.xlabel('x1')
+plt.ylabel('x2')
+plt.show
+
+x1red.clear
+x2red.clear
+x1blue.clear
+x2blue.clear
+
+#Plotage x3 fonction de x1
+x1red=[]
+x3red=[]
+x1blue=[]
+x3blue=[]
+
+for i in range(99999):
+    if y.iloc[i][0]==-1 :
+        x1red.append(x.iloc[i][0])
+        x3red.append(x.iloc[i][2])
+    else:
+        x1blue.append(x.iloc[i][0])
+        x3blue.append(x.iloc[i][2])
+        
+plt.plot(x1blue,x3blue,'bo')
+plt.plot(x1red,x3red,'ro')
+plt.title('x3-x1')
+plt.xlabel('x1')
+plt.ylabel('x3')
+plt.show
+
+x1red.clear
+x3red.clear
+x1blue.clear
+x3blue.clear
+
+#Plotage x3 fonction de x2
+x2red=[]
+x3red=[]
+x2blue=[]
+x3blue=[]
+
+for i in range(99999):
+    if y.iloc[i][0]==-1 :
+        x2red.append(x.iloc[i][1])
+        x3red.append(x.iloc[i][2])
+    else:
+        x2blue.append(x.iloc[i][1])
+        x3blue.append(x.iloc[i][2])
+        
+plt.plot(x2blue,x3blue,'bo')
+plt.plot(x2red,x3red,'ro')
+plt.title('x3-x2')
+plt.xlabel('x2')
+plt.ylabel('x3')
+plt.show
+
+x2red.clear
+x3red.clear
+x2blue.clear
+x3blue.clear
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

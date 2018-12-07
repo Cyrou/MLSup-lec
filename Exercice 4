@@ -1,10 +1,23 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Dec  4 09:43:17 2018
+
+@author: cyrilrousset
+"""
+
 import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
+from sklearn.neighbors import KNeighborsClassifier 
+from sklearn.model_selection import train_test_split
+import numpy as np
 import random
+import math as math
+from numpy import linalg as LA
 
 x=pd.read_csv('/Users/cyrilrousset/Desktop/data_set_4_X.csv')
 y=pd.read_csv('/Users/cyrilrousset/Desktop/data_set_4_Y.csv')
+
 
 #Plotage x2 fonction de x1
 x1red=[]
@@ -31,3 +44,28 @@ x1red.clear
 x2red.clear
 x1blue.clear
 x2blue.clear
+
+#2 
+
+
+s=0
+r=np.random.uniform(-9,9,999)
+for i in range(99):
+    for j in range(99):
+        s=s+r[i]*r[j]*math.exp(LA.norm(x.iloc[i]-x.iloc[j])*LA.norm(x.iloc[i]-x.iloc[j]))
+print(s)
+    
+    
+    
+#5-Comparaison avec k-means
+y=np.ravel(y)
+val = [1,2,3]
+for k in val :
+   X_train, X_test, y_train, y_test = train_test_split(x,y, train_size=0.8, random_state=0)
+   clf = KNeighborsClassifier(n_neighbors=k)  
+   clf.fit(X_train, y_train)
+   Yres=clf.predict(X_test)
+   sumVect=(Yres-y_test)/2
+   sumVect=np.absolute(sumVect)
+   error=np.sum(sumVect)/(len(sumVect))
+   print(error)

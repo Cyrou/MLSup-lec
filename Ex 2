@@ -66,3 +66,41 @@ for mu in val:
 
 plt.plot(val, error_res)
 
+
+#Q2
+min_error=min(error_res)
+min_mu=val[error_res.index(min_error)]
+print('min_error: {}'.format(min_error))
+print('min_mu: {}'.format(min_mu))
+
+#Q3
+mprime = 1000
+eta = 0.5
+T = mprime
+
+mu=0.01
+
+val = [0.1]
+
+
+
+for mu in val:
+       for j in range(10): #on devait moyenner sur 100 iter mais c'est trop pour ce programme (je ne sais pas quelle est la partie la plus gourmande peut être faut il la modifier)
+        
+        w=np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
+        
+    
+    #len(dataX) = len(dataY) = 99999
+        
+        X_train, X_test, y_train, y_test = train_test_split(dataX,dataY, train_size=0.01, random_state=0)
+        #len(X_train) = 999
+        #len(X_test) = 99000
+        
+        for t in range (T) :
+            i = random.randint(0,998) #999 car en réalité la premiere ligne du fichier est pas lue donc il y a 99999 lignes 
+            v = 2*mu*w[t]
+            if (  y_train[i]*np.dot(w[t],X_train.values[i])  < 1 ) :
+                v = v - y_train[i]*X_train.values[i]
+            temp = w[t]-eta*v
+            w = np.append(w,[temp],axis = 0)
+       w_res = w.mean(0)

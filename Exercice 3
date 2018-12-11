@@ -1,4 +1,4 @@
-mport pandas as pd
+Import pandas as pd
 import matplotlib.pyplot as plt
 
 x=pd.read_csv('/Users/cyrilrousset/Desktop/data_set_3_X.csv')
@@ -81,6 +81,80 @@ x2red.clear
 x3red.clear
 x2blue.clear
 x3blue.clear
+
+#Kernel
+data1=(pd.read_csv('/Users/cyrilrousset/Desktop/data_set_3_Y.csv'))
+data1=abs(data1)
+table2=[data1,dataX]
+table2=pd.concat(table2,axis=1)
+sqr1=[]
+for i in range(len(dataX)):
+    sqr1.append(x.iloc[i][0]*x.iloc[i][0])
+sqr2=[]
+for i in range(len(dataX)):
+    sqr2.append(x.iloc[i][1]*x.iloc[i][1])
+sqr3=[]
+for i in range(len(dataX)):
+    sqr3.append(x.iloc[i][2]*x.iloc[i][2])
+sqr1=pd.DataFrame(sqr1)
+sqr2=pd.DataFrame(sqr2)
+sqr3=pd.DataFrame(sqr3)
+sqr=[sqr1,sqr2,sqr3]
+sqr=pd.concat(sqr,axis=1)
+print(sqr)
+x12=[]
+for i in range(len(dataX)):
+    x12.append(x.iloc[i][0]*x.iloc[i][1])
+x13=[]
+for i in range(len(dataX)):
+    x13.append(x.iloc[i][0]*x.iloc[i][2])
+x23=[]
+for i in range(len(dataX)):
+    x23.append(x.iloc[i][1]*x.iloc[i][2])
+x12=pd.DataFrame(x12)
+x13=pd.DataFrame(x13)
+x23=pd.DataFrame(x23)
+x1=[x12,x13,x23]
+x1=pd.concat(x1,axis=1)
+
+ker=table2.join(sqr)
+print(ker)
+x1.columns=['a','b','c']
+ker=ker.join(x1)
+
+
+#Valuew
+#Value of w
+#Q1
+dataX=ker
+dataY=np.ravel(pd.read_csv('/Users/cyrilrousset/Desktop/data_set_3_Y.csv'))
+mprime = 4000
+eta = 0.5
+T = mprime
+val = [0]
+error_res = []
+for mu in val:
+    error_tab = []
+    for j in range(10): 
+        w=np.array([[0, 0, 0,0,0,0,0,0,0,0]])
+        X_train, X_test, y_train, y_test = train_test_split(dataX,dataY, train_size=mprime/len(dataY), random_state=0)
+        for t in range (T) :
+            i = random.randint(0,len(X_train)-1) es 
+            v = 2*mu*w[t]
+            if ( ( y_train[i]*np.dot(w[t],X_train.values[i]) ) < 1 ) :
+                v = v - y_train[i]*X_train.values[i]
+            temp = w[t]-eta*v
+            w = np.append(w,[temp],axis = 0)
+        w_res = w.mean(0)
+       # print('w_res=',w_res)
+        error = 0
+        for i in range(len(X_test)-1):
+        #  print('value =',y_test[i]*np.dot(w_res,X_test.values[i]))
+            if ( y_test[i]*np.dot(w_res,X_test.values[i]) < 1 ) :
+                error = error + ((1 - y_test[i]*np.dot(w_res,X_test.values[i])))/len(X_test)
+            error_tab.append(error)
+    error_mean = np.mean(error_tab)
+print(error_mean)
 
 
 

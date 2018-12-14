@@ -18,8 +18,18 @@ from numpy import linalg as LA
 x=pd.read_csv('/Users/cyrilrousset/Desktop/data_set_4_X.csv')
 y=pd.read_csv('/Users/cyrilrousset/Desktop/data_set_4_Y.csv')
 
+#DefinitionKernel
+def GKernel(x,y,sigma):
+    return math.exp(-(LA.norm(x+(-1)*y)**2))/(2*sigma**2)
 
-#Plotage x2 fonction de x1
+#TestKernel
+
+a=[1,1]  
+b=[0,0] 
+sigma =2
+print(GKernel(a,b,sigma))
+
+#Q1-Plotage x2 fonction de x1
 x1red=[]
 x2red=[]
 x1blue=[]
@@ -45,15 +55,83 @@ x2red.clear
 x1blue.clear
 x2blue.clear
 
-#2 
-
-
+#2-TestKernel
 s=0
-r=np.random.uniform(-9,9,999)
-for i in range(99):
-    for j in range(99):
-        s=s+r[i]*r[j]*math.exp(LA.norm(x.iloc[i]-x.iloc[j])*LA.norm(x.iloc[i]-x.iloc[j]))
+r=np.random.uniform(-9,9,9)
+for i in range(9):
+    for j in range(9):
+        s=s+r[i]*r[j]*GKernel(x.iloc[i],x.iloc[j],1)
 print(s)
+
+
+
+
+
+
+
+#3-Taux d'erreur normal
+dataX=x
+dataY=np.ravel(pd.read_csv('/Users/cyrilrousset/Desktop/data_set_4_Y.csv'))
+mprime = 1000
+eta = 0.5
+T = mprime
+mu=0
+error_res = []
+error_tab = []
+for j in range(10): 
+        w=np.array([[0, 0]])
+        X_train, X_test, y_train, y_test = train_test_split(dataX,dataY, train_size=mprime/len(dataY), random_state=0)
+        for t in range (T) :
+            i = random.randint(0,len(X_train)-1) 
+            v = 2*mu*w[t]
+            if (  y_train[i]*np.dot(w[t],X_train.values[i])  < 1 ) :
+                v = v - y_train[i]*X_train.values[i]
+            temp = w[t]-eta*v
+            w = np.append(w,[temp],axis = 0)
+        w_res = w.mean(0)
+        error = 0
+        for i in range(len(X_test)-1):
+          #  print('value =',y_test[i]*np.dot(w_res,X_test.values[i]))
+            if ( y_test[i]*np.dot(w_res,X_test.values[i]) < 1 ) :
+                error = error + ((1 - y_test[i]*np.dot(w_res,X_test.values[i])))/(len(X_test))
+        error_tab.append(error)
+error_mean = np.mean(error_tab)
+print(error_mean)        
+    
+
+#4-Taux d'erreur SVD Kernel
+dataX=x
+dataY=np.ravel(pd.read_csv('/Users/cyrilrousset/Desktop/data_set_4_Y.csv'))
+mprime = 1000
+eta = 0.5
+T = mprime
+mu=0
+sigmas=[0.001,0.01,0.1,1,10]
+for sigma in sigmas:
+    error_res = []
+    error_tab = []
+    for j in range(10): 
+        w=np.array([[0, 0]])
+        X_train, X_test, y_train, y_test = train_test_split(dataX,dataY, train_size=mprime/len(dataY), random_state=0)
+        for t in range (T) :
+            i = random.randint(0,len(X_train)-1) 
+            v = 2*mu*w[t]
+            if (  y_train[i]*GKernel(w[t],X_train.values[i],sigma)  < 1 ) :
+                v = v - y_train[i]*X_train.values[i]
+            temp = w[t]-eta*v
+            w = np.append(w,[temp],axis = 0)
+        w_res = w.mean(0)
+        error = 0
+        for i in range(len(X_test)-1):
+          #  print('value =',y_test[i]*np.dot(w_res,X_test.values[i]))
+            if ( y_test[i]*np.dot(w_res,X_test.values[i]) < 1 ) :
+                error = error + ((1 - y_test[i]*GKernel(w_res,X_test.values[i],sigma)))/(len(X_test))
+        error_tab.append(error)
+    error_mean = np.mean(error_tab)
+    print('sigma: {}'.format(sigma))   
+    print('error: {}'.format(error_mean))   
+
+
     
     
     

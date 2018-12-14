@@ -1,71 +1,110 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Tue Dec  4 09:43:17 2018
+Created on Fri Nov 16 16:38:41 2018
 
 @author: cyrilrousset
 """
 
+#Perceptron
+
+
+
+#Import des modules
 import pandas as pd
-import matplotlib.pyplot as plt
-from sklearn.neighbors import KNeighborsClassifier 
-from sklearn.model_selection import train_test_split
 import numpy as np
-import random
-import math as math
+from datetime import datetime
+from sklearn.linear_model import Perceptron
+from sklearn.model_selection import train_test_split
+import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt2
 from numpy import linalg as LA
 
-x=pd.read_csv('/Users/cyrilrousset/Desktop/data_set_4_X.csv')
-y=pd.read_csv('/Users/cyrilrousset/Desktop/data_set_4_Y.csv')
+#Extraction des données
+dataX=pd.read_csv('/Users/cyrilrousset/Desktop/data_set_1_X.csv')
+dataY=pd.read_csv('/Users/cyrilrousset/Desktop/data_set_1_Y.csv')
+dataY=np.ravel(dataY)
 
+r=[]
+t=[]
+e2=[]
 
-#Plotage x2 fonction de x1
-x1red=[]
-x2red=[]
-x1blue=[]
-x2blue=[]
+#Training set 10,20,30 + Training time plot
+start_time=datetime.now()
+for i in range(1,10):
+    r.append(i)
+    for a in range(100):
+          start_time=datetime.now()
+          e=[]
+          X_train, X_test, y_train, y_test = train_test_split(dataX,dataY, train_size=0.001*(i), random_state=0)
+          clf = Perceptron(tol=None, random_state=0, max_iter=30,eta0=2)
+          clf.fit(X_train,y_train)
+          Yres=clf.predict(X_test)
+          sumVect=(Yres-y_test)/2
+          sumVect=np.absolute(sumVect)
+          error=np.sum(sumVect)/(len(sumVect))
+          e.append(error)
+          end_time=datetime.now()
+    print('Duration: {}'.format(end_time - start_time))
+    print('Mean error: {}'.format(np.mean(e)))
+    t.append(format(end_time - start_time))
 
-for i in range(99999):
-    if y.iloc[i][0]==-1 :
-        x1red.append(x.iloc[i][0])
-        x2red.append(x.iloc[i][1])
-    else:
-        x1blue.append(x.iloc[i][0])
-        x2blue.append(x.iloc[i][1])
-        
-plt.plot(x1blue,x2blue,'bo')
-plt.plot(x1red,x2red,'ro')
-plt.title('x2-x1')
-plt.xlabel('x1')
-plt.ylabel('x2')
+plt.plot(r,t,'ro')
+plt.title('time function of train')
+plt.xlabel('trainset')
+plt.ylabel('execution_time')
 plt.show
 
-x1red.clear
-x2red.clear
-x1blue.clear
-x2blue.clear
+#Training set 10,20,30 + Error plot
+for i in range(1,10):
+    r.append(i)
+    for a in range(100):
+          start_time=datetime.now()
+          e=[]
+          X_train, X_test, y_train, y_test = train_test_split(dataX,dataY, train_size=0.001*(i), random_state=0)
+          clf = Perceptron(tol=0.001, random_state=0)
+          clf.fit(X_train,y_train)
+          Yres=clf.predict(X_test)
+          sumVect=(Yres-y_test)/2
+          sumVect=np.absolute(sumVect)
+          error=np.sum(sumVect)/(len(sumVect))
+          e.append(error)
+          end_time=datetime.now()
+    e2.append(np.mean(e))
 
-#2 
+
+plt2.figure    
+plt2.plot(r,e2,'ro')
+plt2.title('error function of training set')
+plt2.xlabel('trainset')
+plt2.ylabel('error')
+plt2.show
 
 
-s=0
-r=np.random.uniform(-9,9,999)
-for i in range(99):
-    for j in range(99):
-        s=s+r[i]*r[j]*math.exp(LA.norm(x.iloc[i]-x.iloc[j])*LA.norm(x.iloc[i]-x.iloc[j]))
-print(s)
+#Minimum value
+e=1
+i=0.001
+while e>0.01:
+    for a in range(100):
+        er=[]
+        X_train, X_test, y_train, y_test = train_test_split(dataX,dataY, train_size=i, random_state=0)
+        clf = Perceptron(tol=None, random_state=0, max_iter=5,eta0=2)
+        clf.fit(X_train,y_train)
+        Yres=clf.predict(X_test)
+        sumVect=(Yres-y_test)/2
+        sumVect=np.absolute(sumVect)
+        e=np.sum(sumVect)/(len(sumVect))
+        er.append(e)
+    e=np.mean(er)  
+    i=i+0.01
+print(e)
+print(i)
     
-    
-    
-#5-Comparaison avec k-means
-y=np.ravel(y)
-val = [1,2,3]
-for k in val :
-   X_train, X_test, y_train, y_test = train_test_split(x,y, train_size=0.8, random_state=0)
-   clf = KNeighborsClassifier(n_neighbors=k)  
-   clf.fit(X_train, y_train)
-   Yres=clf.predict(X_test)
-   sumVect=(Yres-y_test)/2
-   sumVect=np.absolute(sumVect)
-   error=np.sum(sumVect)/(len(sumVect))
-   print(error)
+#PrintListResult    
+X_train2, X_test2, y_train2, y_test2 = train_test_split(dataX,dataY, train_size=0.1, random_state=0)
+clf = Perceptron(tol=1e-3, random_state=0)
+clf.fit(X_train2,y_train2)
+Yres2=clf.predict(X_test2)
+norm=LA.norm(Yres2)
+w_exercise1=Yres2/norm
+print(w_exercise1,sep=';')

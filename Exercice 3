@@ -1,10 +1,21 @@
-Import pandas as pd
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Dec  4 00:12:51 2018
+
+@author: cyrilrousset
+"""
+
+import pandas as pd
+import numpy as np
+import random
 import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
 
 x=pd.read_csv('/Users/cyrilrousset/Desktop/data_set_3_X.csv')
 y=pd.read_csv('/Users/cyrilrousset/Desktop/data_set_3_Y.csv')
 
-#Plotage x2 fonction de x1
+#Séparation linéaire
 x1red=[]
 x2red=[]
 x1blue=[]
@@ -30,7 +41,7 @@ x2red.clear
 x1blue.clear
 x2blue.clear
 
-#Plotage x3 fonction de x1
+
 x1red=[]
 x3red=[]
 x1blue=[]
@@ -56,7 +67,7 @@ x3red.clear
 x1blue.clear
 x3blue.clear
 
-#Plotage x3 fonction de x2
+
 x2red=[]
 x3red=[]
 x2blue=[]
@@ -82,7 +93,45 @@ x3red.clear
 x2blue.clear
 x3blue.clear
 
-#Kernel
+
+#Q2 Mean error without Kernel
+
+dataX=pd.read_csv('/Users/cyrilrousset/Desktop/data_set_3_X.csv')
+dataY=np.ravel(pd.read_csv('/Users/cyrilrousset/Desktop/data_set_3_Y.csv'))
+
+mprime = 1000
+eta = 0.5
+T = mprime
+
+val = [0]
+error_res = []
+for mu in val:
+    error_tab = []
+    for j in range(10): 
+        w=np.array([[0, 0, 0]])
+        X_train, X_test, y_train, y_test = train_test_split(dataX,dataY, train_size=0.1, random_state=0)
+        for t in range (T) :
+            i = random.randint(0,len(X_train)-1) #999 car en réalité la premiere ligne du fichier est pas lue donc il y a 99999 lignes 
+            v = 2*mu*w[t]
+            if ( ( y_train[i]*np.dot(w[t],X_train.values[i]) ) < 1 ) :
+                v = v - y_train[i]*X_train.values[i]
+            temp = w[t]-eta*v
+            w = np.append(w,[temp],axis = 0)
+        w_res = w.mean(0)
+       # print('w_res=',w_res)
+        
+        error = 0
+        
+        for i in range(len(X_test)-1):
+          #  print('value =',y_test[i]*np.dot(w_res,X_test.values[i]))
+            if ( y_test[i]*np.dot(w_res,X_test.values[i]) < 1 ) :
+                error = error + ((1 - y_test[i]*np.dot(w_res,X_test.values[i])))/len(X_test)
+        
+        error_tab.append(error)
+    error_mean = np.mean(error_tab)
+print(error_mean)
+
+#Q3 Kernel
 data1=(pd.read_csv('/Users/cyrilrousset/Desktop/data_set_3_Y.csv'))
 data1=abs(data1)
 table2=[data1,dataX]
@@ -101,7 +150,7 @@ sqr2=pd.DataFrame(sqr2)
 sqr3=pd.DataFrame(sqr3)
 sqr=[sqr1,sqr2,sqr3]
 sqr=pd.concat(sqr,axis=1)
-print(sqr)
+
 x12=[]
 for i in range(len(dataX)):
     x12.append(x.iloc[i][0]*x.iloc[i][1])
@@ -116,16 +165,12 @@ x13=pd.DataFrame(x13)
 x23=pd.DataFrame(x23)
 x1=[x12,x13,x23]
 x1=pd.concat(x1,axis=1)
-
 ker=table2.join(sqr)
-print(ker)
 x1.columns=['a','b','c']
 ker=ker.join(x1)
 
+#Q3Value of w for m'=4000
 
-#Valuew
-#Value of w
-#Q1
 dataX=ker
 dataY=np.ravel(pd.read_csv('/Users/cyrilrousset/Desktop/data_set_3_Y.csv'))
 mprime = 4000
@@ -139,22 +184,50 @@ for mu in val:
         w=np.array([[0, 0, 0,0,0,0,0,0,0,0]])
         X_train, X_test, y_train, y_test = train_test_split(dataX,dataY, train_size=mprime/len(dataY), random_state=0)
         for t in range (T) :
-            i = random.randint(0,len(X_train)-1) es 
+            i = random.randint(0,len(X_train)-1) #999 car en réalité la premiere ligne du fichier est pas lue donc il y a 99999 lignes 
             v = 2*mu*w[t]
             if ( ( y_train[i]*np.dot(w[t],X_train.values[i]) ) < 1 ) :
                 v = v - y_train[i]*X_train.values[i]
             temp = w[t]-eta*v
             w = np.append(w,[temp],axis = 0)
+    w_res = w.mean(0)
+print(w_res)      
+
+#Q3 Error Kernel
+dataX=ker
+dataY=np.ravel(pd.read_csv('/Users/cyrilrousset/Desktop/data_set_3_Y.csv'))
+mprime = 500
+eta = 0.5
+T = mprime
+mu=0
+error_res = []
+error_tab = []
+for j in range(10): 
+        w=w=np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
+        X_train, X_test, y_train, y_test = train_test_split(dataX,dataY, train_size=mprime/len(ker), random_state=0)
+        for t in range (T) :
+            i = random.randint(0,len(X_train)-1) 
+            v = 2*mu*w[t]
+            if (  y_train[i]*np.dot(w[t],X_train.values[i])  < 1 ) :
+                v = v - y_train[i]*X_train.values[i]
+            temp = w[t]-eta*v
+            w = np.append(w,[temp],axis = 0)
         w_res = w.mean(0)
-       # print('w_res=',w_res)
         error = 0
         for i in range(len(X_test)-1):
-        #  print('value =',y_test[i]*np.dot(w_res,X_test.values[i]))
+          #  print('value =',y_test[i]*np.dot(w_res,X_test.values[i]))
             if ( y_test[i]*np.dot(w_res,X_test.values[i]) < 1 ) :
-                error = error + ((1 - y_test[i]*np.dot(w_res,X_test.values[i])))/len(X_test)
-            error_tab.append(error)
-    error_mean = np.mean(error_tab)
-print(error_mean)
+                error = error + ((1 - y_test[i]*np.dot(w_res,X_test.values[i])))/(len(X_test))
+        error_tab.append(error)
+error_mean = np.mean(error_tab)
+print(error_mean)        
+    
+
+
+#Produit scalaire
+for i in range(len(ker)-1):
+    for j in range(len(ker)-1):
+        print(np.dot(ker.iloc[i],ker.iloc[j]))
 
 
 

@@ -65,7 +65,7 @@ while e_limit > 0.01 :
     e=[]
     for a in range(100):
           X_train, X_test, y_train, y_test = train_test_split(dataX,dataY, train_size=0.001*indice, random_state=None )
-          clf = Perceptron(tol=0.001, random_state=0)
+          clf = Perceptron(tol=None, random_state=None)
           clf.fit(X_train,y_train)
           Yres=clf.predict(X_test)
           sumVect=abs(Yres-y_test)/2

@@ -1,0 +1,199 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Dec  9 17:21:03 2018
+
+@author: philippenaroz
+"""
+
+import pandas as pd
+import numpy as np
+from numpy import linalg
+
+import random
+import matplotlib.pyplot as plt
+
+from sklearn.model_selection import train_test_split
+
+dataX=pd.read_csv('/Users/philippenaroz/Desktop/datasets/data_set_3_X.csv')
+#x=np.ravel(pd.read_csv('/Users/philippenaroz/Desktop/datasets/data_set_2_X.csv'))
+dataY=pd.read_csv('/Users/philippenaroz/Desktop/datasets/data_set_3_Y.csv')
+#len(dataX)=99999
+
+#question 1
+
+blue_dot_1 = np.array([])
+blue_dot_2 = np.array([])
+blue_dot_3 = np.array([])
+
+red_dot_1 = np.array([])
+red_dot_2 = np.array([])
+red_dot_3 = np.array([])
+
+for i in range(999):
+    if ( dataY.values[i][0] == 1) :
+        blue_dot_1 = np.append(blue_dot_1, dataX.values[i][0])
+        blue_dot_2 = np.append(blue_dot_2, dataX.values[i][1])
+        blue_dot_3 = np.append(blue_dot_3, dataX.values[i][2])
+    else : 
+        red_dot_1 = np.append(red_dot_1, dataX.values[i][0])
+        red_dot_2 = np.append(red_dot_2, dataX.values[i][1])
+        red_dot_3 = np.append(red_dot_3, dataX.values[i][2])
+        
+plt.figure()
+plt.scatter(blue_dot_1,blue_dot_2,color='blue',marker='o')
+plt.scatter(red_dot_1,red_dot_2,color='red',marker='o')
+plt.show()
+
+plt.figure()
+plt.scatter(blue_dot_1,blue_dot_3,color='blue',marker='o')
+plt.scatter(red_dot_1,red_dot_3,color='red',marker='o')
+plt.show()
+
+plt.figure()
+plt.scatter(blue_dot_2,blue_dot_3,color='blue',marker='o')
+plt.scatter(red_dot_2,red_dot_3,color='red',marker='o')
+plt.show()
+
+
+#question 2
+
+#mprime = 1000
+#eta = 0.5
+#T = mprime
+#
+#mu=0
+#
+#error_tab = []
+#    
+#
+#for j in range(10):
+#    
+#    w=np.array([[0, 0, 0]])
+#    #len(dataX) = len(dataY) = 99999
+#    
+#    X_train, X_test, y_train, y_test = train_test_split(dataX,dataY.values, train_size=0.01, random_state=None, shuffle=True)
+#    #len(X_train) = 999
+#    #len(X_test) = 99000
+#    for t in range (T) :
+#        i = random.randint(0,998) #999 car en réalité la premiere ligne du fichier est pas lue donc il y a 99999 lignes 
+#        v = 2*mu*w[t] 
+#        if (  y_train[i]*np.dot(w[t],X_train.values[i])  < 1 ) :
+#            v = v - y_train[i]*X_train.values[i]
+#        temp = w[t]-eta*v
+#        w = np.append(w,[temp],axis = 0)
+#    w_res = w[T]
+#   # print('w_res=',w_res)
+#    
+#    error = 0
+#    
+#    for k in range(99000):
+#      #  print('value =',y_test[i]*np.dot(w_res,X_test.values[i]))
+#        if ( y_test[k]*np.dot(w_res,X_test.values[k]) < 1 ) :
+#            #error = error + ((1 - y_test[k]*np.dot(w_res,X_test.values[k])))
+#            
+#            error = error + 1
+#    error_tab.append(error)
+#
+#error_mean = np.mean(error_tab)/99000
+#
+#print('error =', error_mean)
+#
+
+#question 3
+
+def Phi(x) :
+    return np.array([1, x[0], x[1], x[2], x[0]*x[0], x[1]*x[1], x[2]*x[2], x[0]*x[1], x[0]*x[2], x[1]*x[2]  ])
+    
+
+error_res = np.array([])
+
+
+mprime_vect = []
+eta = 0.5
+mu = 0
+
+
+for i in range (1, 9):
+    
+    mprime = 500 * i
+    T = mprime
+    mprime_vect.append(mprime)
+    
+    error_tab = []
+    
+    
+    for j in range(10):
+        
+        w=np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
+        
+        X_train, X_test, y_train, y_test = train_test_split(dataX,dataY.values, train_size=0.005*i, random_state=None, shuffle=True)
+        #len(X_train) = 999
+        #len(X_test) = 99000
+        for t in range (T) :
+            n = random.randint(0,len(X_train)-1)
+            v = 2*mu*w[t] 
+            if (  y_train[n]*np.dot(w[t],Phi(X_train.values[n]))  < 1 ) :
+                v = v - y_train[n]*Phi(X_train.values[n])
+            temp = w[t]-eta*v
+            w = np.append(w,[temp],axis = 0)
+        w_res = w[T]
+        print('w_res = ', w_res)
+        error = 0
+        
+        L = len(X_test)
+        
+        for k in range(L):
+          #  print('value =',y_test[i]*np.dot(w_res,X_test.values[i]))
+            if ( y_test[k]*np.dot(w_res,Phi(X_test.values[k])) < 1 ) :
+                #error = error + ((1 - y_test[k]*np.dot(w_res,X_test.values[k])))
+                
+                error = error + 1
+                
+        error_tab.append(error/L)
+    error_mean = np.mean(error_tab)
+    
+    error_res=np.append(error_res, [error_mean])
+    
+print('error_res =',error_res)
+
+plt.figure
+plt.plot(mprime_vect, error_res)
+plt.show()
+
+
+#optimal hyperplan w
+
+i = 8
+    
+mprime = 500 * i
+T = mprime
+
+error_tab = []
+
+w_final = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+
+
+j_limit = 100
+
+for j in range(j_limit):
+    
+    w=np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
+    
+    X_train, X_test, y_train, y_test = train_test_split(dataX,dataY.values, train_size=0.005*i, random_state=None, shuffle=True)
+    #len(X_train) = 999
+    #len(X_test) = 99000
+    for t in range (T) :
+        n = random.randint(0,len(X_train)-1)
+        v = 2*mu*w[t] 
+        if (  y_train[n]*np.dot(w[t],Phi(X_train.values[n]))  < 1 ) :
+            v = v - y_train[n]*Phi(X_train.values[n])
+        temp = w[t]-eta*v
+        w = np.append(w,[temp],axis = 0)
+    w_final = np.add(w_final, w[T])
+    
+        
+w_final = w_final/j_limit
+print('w_final= ', w_final)
+w_final = w_final/linalg.norm(w_final)  
+print('w_final= ', w_final)
